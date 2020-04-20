@@ -127,7 +127,7 @@ public class Database {
 		}
 	}
 	
-	public void endOfJourney(Journey j) {
+		public void endOfJourney(Journey j) {
 		if (j.getDestination().equals(j.getCurrentLocation())) {
 			for (int i=0; i < j.getContainerList().size(); i++) {
 				j.getContainerList().get(i).setContent("empty");
@@ -140,12 +140,14 @@ public class Database {
 			history.add(j);
 			journey.remove(j);
 		} 
+		notifychartOberver();
 	}
 	
 	public void addData(Container c, int temp, int pressure, int humidity) {
 		c.getTempList().add(temp);
 		c.getPressureList().add(pressure);
 		c.getHumList().add(humidity);
+		notifyObservers(c);
 	}
 	
 	public void updateData(Journey j, Container c, int temp, int pressure, int humidity) {
@@ -156,11 +158,35 @@ public class Database {
 		}
 		else {
 			addData(c, temp, pressure, humidity);
+		
 		}
+		notifyObservers(c);
 	}
 	
 	
+	public void addObserver(observer o) {
+		obs.add(o);
+	}
+
+	private void notifyObservers( Container c) {
+		for (observer o: obs) {
+			o.update(c.getTempList(),c.getPressureList(),c.getHumList());
+		}
+	}
 	
+	public void addchartObserver(chartobserver o) {
+		cobs.add(o);
+	}
+	//where to containders get added to warehouse
+	private void notifychartOberver() {
+		for (chartobserver o :cobs) {
+			o.updateC(containerWarehouse);
+		}
+	}
+	
+}
+		
+
 	
 }
 		
